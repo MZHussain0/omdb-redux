@@ -7,10 +7,12 @@ import {
 import MovieListing from "../MovieListing/MovieListing";
 
 const Home = () => {
+  const movieText = "ring";
+  const seriesText = "prince";
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchAsyncMovies());
-    dispatch(fetchAsyncShows());
+    dispatch(fetchAsyncMovies(movieText));
+    dispatch(fetchAsyncShows(seriesText));
   }, [dispatch]);
   return (
     <Fragment>

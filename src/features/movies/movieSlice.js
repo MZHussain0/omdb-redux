@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import MovieApi from "../../common/Apis/MovieApi";
 import { APIKey } from "../../common/Apis/MovieApiKey";
 
+// Fetching Movies
 export const fetchAsyncMovies = createAsyncThunk(
   "movies/fetchAsyncMovies",
   async () => {
@@ -12,6 +13,8 @@ export const fetchAsyncMovies = createAsyncThunk(
     return response.data;
   }
 );
+
+// Fetching Shows
 export const fetchAsyncShows = createAsyncThunk(
   "movies/fetchAsyncShows",
   async () => {
@@ -23,17 +26,27 @@ export const fetchAsyncShows = createAsyncThunk(
   }
 );
 
+// Fetching movies/shows details
+export const fetchAsyncDetails = createAsyncThunk(
+  "movies/fetchAsyncDetails",
+  async (id) => {
+    const response = await MovieApi.get(`?apikey=${APIKey}&i=${id}&plot=full`);
+    return response.data;
+  }
+);
+
 const initialState = {
   movies: {},
   shows: {},
+  details: {},
 };
 
 const movieSlice = createSlice({
   name: "movies",
   initialState,
   reducers: {
-    addMovies: (state, { payload }) => {
-      state.movies = payload;
+    removeSelectedDetails: (state) => {
+      state.details = {};
     },
   },
   extraReducers: (builder) => {
@@ -42,12 +55,16 @@ const movieSlice = createSlice({
         console.log("Pending");
       })
       .addCase(fetchAsyncMovies.fulfilled, (state, { payload }) => {
-        console.log("Fetched successfully");
+        console.log("Fetched movies successfully");
         return { ...state, movies: payload };
       })
       .addCase(fetchAsyncShows.fulfilled, (state, { payload }) => {
-        console.log("Fetched successfully");
+        console.log("Fetched shows successfully");
         return { ...state, shows: payload };
+      })
+      .addCase(fetchAsyncDetails.fulfilled, (state, { payload }) => {
+        console.log("Fetched details successfully");
+        return { ...state, details: payload };
       })
       .addCase(fetchAsyncMovies.rejected, (state, action) => {
         state.status = "Rejected";
@@ -56,7 +73,8 @@ const movieSlice = createSlice({
   },
 });
 
-export const { addMovies } = movieSlice.actions;
+export const { removeSelectedDetails } = movieSlice.actions;
 export const getAllMovies = (state) => state.movies.movies;
 export const getAllShows = (state) => state.movies.shows;
+export const getAllDetails = (state) => state.movies.details;
 export default movieSlice.reducer;
